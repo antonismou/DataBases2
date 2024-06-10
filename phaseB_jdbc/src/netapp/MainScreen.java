@@ -108,6 +108,29 @@ public class MainScreen extends JFrame implements ActionListener{
     
     private void updatePersonalDetails() {
     	// Write code to update the database with new values in the JTextFields
+    	PreparedStatement st;
+		try {
+			st = conn.prepareStatement("UPDATE member SET \"firstName\" = ?, \"secondName\" = ?, \"dateOfBirth\" = cast(? as DATE), country =? WHERE email = ?");
+			st.setString(1,firstNameField.getText());
+			st.setString(2,lastNameField.getText());
+			st.setString(3,dobField.getText());
+			st.setString(4,countryField.getText());
+			st.setString(5,userEmail);
+	    	
+	    	 // Execute the update query
+            int rowsAffected = st.executeUpdate();
+
+            // Check if the update was successful
+            if (rowsAffected == 1) {
+                System.out.println("Record updated successfully.");
+            } else {
+                System.out.println("No record found with the given email.");
+            }
+            
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     private void fetchNetwork() {
@@ -130,6 +153,6 @@ public class MainScreen extends JFrame implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		//Perform necessary actions when the Update button is pressed
-		
+		updatePersonalDetails();
 	}
 }
