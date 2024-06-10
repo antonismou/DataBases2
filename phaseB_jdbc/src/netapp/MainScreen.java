@@ -90,6 +90,20 @@ public class MainScreen extends JFrame implements ActionListener{
     
     private void fetchPersonalDetails() {
     	// Write code to show the appropriate values in the JTextFields
+    	PreparedStatement st;
+		try {
+			st = conn.prepareStatement("select \"firstName\",\"secondName\",\"dateOfBirth\",country from member where email = ?");
+			st.setString(1,userEmail);
+	    	ResultSet res = st.executeQuery();
+	    	res.next();
+	    	firstNameField.setText(res.getString("firstName"));
+	    	lastNameField.setText(res.getString("secondName"));
+	    	dobField.setText(res.getString("dateOfBirth"));
+	    	countryField.setText(res.getString("country"));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     private void updatePersonalDetails() {
@@ -98,6 +112,19 @@ public class MainScreen extends JFrame implements ActionListener{
 
     private void fetchNetwork() {
     	// Write code to fill the list with connected members
+    	PreparedStatement st;
+		try {
+			st = conn.prepareStatement("SELECT \"firstName\",\"secondName\", m.email FROM connects c JOIN member m ON c.\"connectedWithEmail\" = m.email WHERE c.email = ?");
+			st.setString(1,userEmail);
+	    	ResultSet res = st.executeQuery();
+	    	while(res.next()) {
+	    		networkListModel.addElement(new Member(res.getString(1),res.getString(2),res.getString(3)));
+	    		System.out.println(res.getString(1) + res.getString(2) + res.getString(3));
+	    	}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
 	@Override

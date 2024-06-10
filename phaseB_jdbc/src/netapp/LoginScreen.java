@@ -83,8 +83,23 @@ public class LoginScreen extends JFrame implements ActionListener {
 			st = conn.prepareStatement("select email,\"thePassword\" from member where email = ?");
 			st.setString(1,email);
 	    	ResultSet res = st.executeQuery();
-	    	res.next();
-	    	System.out.println(res.getString("email") + res.getString("thePassword"));
+	    	if(!res.next()){
+	    		//check if this email exist
+	    		showMessage("Wrong email or password \nTry again");
+	    		System.out.println("wrong email");
+	    	}else {
+	    		//if exist check if the pass is correct
+		    	if(res.getString("thePassword").equals(passField.getText())) {
+		    		System.out.println("correct");
+		    		MainScreen ms = new MainScreen(conn, email);	//create the mainScreen
+		    		this.setVisible(false);		//make the loginScreen invisible
+		    		ms.setVisible(true);		//make the mainScreen visible
+		    	}else {
+		    		showMessage("Wrong email or password \nTry again");
+		    		System.out.println("wrong pass");
+		    	}
+	    	}
+	    	res.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
