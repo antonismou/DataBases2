@@ -9,8 +9,8 @@ import java.sql.*;
 public class LoginScreen extends JFrame implements ActionListener {
 	private static final String DB_URL = "localhost";
     private static final String DB_USER = "postgres";
-    private static final String DB_PASSWORD = "admin";
-    private static final String DB_Name = "Ex2";
+    private static final String DB_PASSWORD = "Covid-19";
+    private static final String DB_Name = "vaseis2";
     
     private JTextField emailField;
     private JTextField passField;

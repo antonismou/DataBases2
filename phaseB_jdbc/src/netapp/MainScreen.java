@@ -69,6 +69,16 @@ public class MainScreen extends JFrame implements ActionListener{
         networkListModel = new DefaultListModel<>();
         networkList = new JList<>(networkListModel);
         networkList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        networkList.addListSelectionListener(new ListSelectionListener() {
+        	public void valueChanged(ListSelectionEvent e) {
+        		 if (!e.getValueIsAdjusting()) {
+                     Member selectedMember = networkList.getSelectedValue();
+                     if (selectedMember != null) {
+                         openMemberDetailScreen(selectedMember.getEmail());
+                     }
+        		 }
+        	}
+        });
         
         
         add(personalDetailsPanel);
@@ -148,6 +158,10 @@ public class MainScreen extends JFrame implements ActionListener{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+    }
+    
+    private void openMemberDetailScreen(String memberEmail) {
+    	new MemberDetailScreen(conn, memberEmail).setVisible(true);
     }
 
 	@Override
