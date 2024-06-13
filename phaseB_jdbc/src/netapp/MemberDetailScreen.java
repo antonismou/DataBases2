@@ -123,7 +123,7 @@ public class MemberDetailScreen extends JFrame {
 
     private void fetchExperience() {
     	// Write code to show member's professional experience to the appropriate JTextArea
-    	String query = "SELECT company, \"workStatus\", title, description, \"fromYear\", \"toYear\" FROM experience WHERE email = ?";
+    	String query = "SELECT \"experienceID\", company, \"workStatus\", title, description, \"fromYear\", \"toYear\" FROM experience WHERE email = ?";
     	PreparedStatement stmt;
     	try {
     		stmt = conn.prepareStatement(query);
@@ -138,7 +138,7 @@ public class MemberDetailScreen extends JFrame {
     					  .append("From: ").append(rs.getString("fromYear")).append("\n")
     					  .append("To: ").append(rs.getString("toYear")).append("\n");
     		}
-    		educationArea.setText(experience.toString());
+    		experienceArea.setText(experience.toString());
     	}
     	catch(SQLException e){
     		e.printStackTrace();
