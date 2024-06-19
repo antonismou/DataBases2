@@ -37,6 +37,7 @@ GROUP BY edu."eduLevel"
 */
 
  -- third query
+--EXPLAIN ANALYZE
 SELECT edu."eduLevel", COUNT(edu."eduLevel") AS member_count
 FROM 
 	(
@@ -77,90 +78,87 @@ GROUP BY edu."eduLevel"
 	SET join_collapse_limit = 8;
 
 7)
-	CREATE INDEX idx_education_country ON education using hash(country);
+	SET join_collapse_limit = 1;
+	CREATE INDEX idx_education_country ON education(country);
 	--------------------reverse settings--------------------
 	DROP INDEX idx_education_country;
+	SET join_collapse_limit = 8;
 
 8)
-	CREATE INDEX idx_advertisement_date_posted ON advertisement ("datePosted");
+	SET join_collapse_limit = 1;
+	CREATE INDEX idx_msg_email ON msg ("receiverEmail");
 	--------------------reverse settings--------------------
-	DROP INDEX idx_advertisement_date_posted;
+	DROP INDEX idx_msg_email;
+	SET join_collapse_limit = 8;
 
 9)
-	CREATE INDEX idx_msg_date_sent ON msg ("dateSent");
+	SET join_collapse_limit = 1;
+	CREATE INDEX idx_advertisement_date_posted ON advertisement ("datePosted");
+	CREATE INDEX idx_msg_email ON msg ("receiverEmail");
 	--------------------reverse settings--------------------
-	DROP INDEX idx_msg_date_sent;
+	DROP INDEX idx_msg_email, idx_advertisement_date_posted;
+	SET join_collapse_limit = 8;
 
 10)
+	SET join_collapse_limit = 1;
+	CREATE INDEX idx_msg_email ON msg ("receiverEmail"); 
 	CREATE INDEX idx_advertisement_date_posted ON advertisement ("datePosted");
-	CREATE INDEX idx_msg_date_sent ON msg ("dateSent");
-	--------------------reverse settings--------------------
-	DROP INDEX idx_msg_date_sent, idx_advertisement_date_posted;
-
-11)
-	CREATE INDEX idx_msg_date ON msg ("dateSent" DESC); 
-	CLUSTER msg USING idx_msg_date;
+	CLUSTER msg USING idx_msg_email;
 	--------------------reverse settings--------------------
 	CREATE INDEX idx_msg_id ON msg("msgID");
 	CLUSTER msg USING idx_msg_id;
-	DROP INDEX idx_msg_date,idx_msg_id;
+	DROP INDEX idx_msg_email,idx_msg_id,idx_advertisement_date_posted;
+	SET join_collapse_limit = 8;
+
+11)
+	SET enable_seqscan = off;
+	SET join_collapse_limit = 1;
+	CREATE INDEX idx_msg_email ON msg ("receiverEmail"); 
+	CREATE INDEX idx_advertisement_date_posted ON advertisement ("datePosted");
+	CREATE INDEX idx_edu_email ON education (email);
+	--------------------reverse settings--------------------
+	SET enable_seqscan = on;
+	SET join_collapse_limit = 8;
+	DROP INDEX idx_edu_email,idx_msg_email,idx_advertisement_date_posted;
 
 12)
+	SET enable_sort = off;
 	SET enable_seqscan = off;
 	SET join_collapse_limit = 1;
-	CREATE INDEX idx_edu_email_country ON education (email);
+	CREATE INDEX idx_msg_email ON msg ("receiverEmail"); 
+	CREATE INDEX idx_advertisement_date_posted ON advertisement ("datePosted");
+	CREATE INDEX idx_edu_email ON education (email);
 	--------------------reverse settings--------------------
 	SET enable_seqscan = on;
+	SET enable_sort = on;
 	SET join_collapse_limit = 8;
-	DROP INDEX idx_edu_email_country;
+	DROP INDEX idx_edu_email,idx_msg_email,idx_advertisement_date_posted;
 
 13)
-	SET enable_seqscan = off;
 	SET enable_sort = off;
+	SET enable_seqscan = off;
 	SET join_collapse_limit = 1;
-	CREATE INDEX idx_edu_email_country ON education (email);
+	CREATE INDEX idx_msg_email ON msg ("receiverEmail"); 
+	CREATE INDEX idx_advertisement_date_posted ON advertisement ("datePosted") INCLUDE("advertisementID", email);
+	CREATE INDEX idx_edu_email ON education (email);
 	--------------------reverse settings--------------------
 	SET enable_seqscan = on;
 	SET enable_sort = on;
 	SET join_collapse_limit = 8;
-	DROP INDEX idx_edu_email_country;
+	DROP INDEX idx_edu_email,idx_msg_email,idx_advertisement_date_posted;
 
 14)
-	SET enable_seqscan = off;
+	SET enable_bitmapscan = off;
 	SET enable_sort = off;
-	SET join_collapse_limit = 1;
-	CREATE INDEX idx_msg_date_sent ON msg ("receiverEmail") INCLUDE("dateSent");
-	--------------------reverse settings--------------------
-	SET enable_seqscan = on;
-	SET enable_sort = on;
-	SET join_collapse_limit = 8;
-	DROP INDEX idx_msg_date_sent;
-
-15,16,17)
-	SET join_collapse_limit = 1;
 	SET enable_seqscan = off;
-	SET enable_sort = off;
-	CREATE INDEX idx_edu_email_country ON education (email) INCLUDE(country);
-	CREATE INDEX idx_msg_date_sent ON msg ("receiverEmail") INCLUDE("dateSent");
-	--------------------reverse settings--------------------
-	SET enable_seqscan = on;
-	SET enable_sort = on;
-	SET join_collapse_limit = 8;
-	DROP INDEX idx_edu_email_country, idx_msg_date_sent;
-
-
-
-18)
 	SET join_collapse_limit = 1;
-	SET enable_seqscan = off;
-	SET enable_sort = off;
+	CREATE INDEX idx_msg_email ON msg ("receiverEmail"); 
+	CREATE INDEX idx_advertisement_date_posted ON advertisement ("datePosted" DESC) INCLUDE("advertisementID", email);
+	CREATE INDEX idx_edu_email ON education (email);
 	CREATE INDEX idx_advertisement_age ON "jobOffer" ("fromAge") INCLUDE("advertisementID");
-	CREATE INDEX idx_advertisement_date ON advertisement ("datePosted");
-	CREATE INDEX idx_edu_email_country ON education (email) INCLUDE(country);
-	CREATE INDEX idx_msg_date_sent ON msg ("receiverEmail") INCLUDE("dateSent");
 	--------------------reverse settings--------------------
-	DROP INDEX idx_msg_date_sent, idx_edu_email_country,idx_advertisement_age, idx_advertisement_date;
-	SET join_collapse_limit = 8;
 	SET enable_seqscan = on;
 	SET enable_sort = on;
+	SET join_collapse_limit = 8;
+	DROP INDEX idx_edu_email,idx_msg_email,idx_advertisement_date_posted,idx_advertisement_age;
 */
