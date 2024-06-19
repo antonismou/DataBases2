@@ -157,6 +157,7 @@ GROUP BY edu."eduLevel"
 	CREATE INDEX idx_edu_email ON education (email);
 	CREATE INDEX idx_advertisement_age ON "jobOffer" ("fromAge") INCLUDE("advertisementID");
 	--------------------reverse settings--------------------
+	SET enable_bitmapscan = on;
 	SET enable_seqscan = on;
 	SET enable_sort = on;
 	SET join_collapse_limit = 8;
